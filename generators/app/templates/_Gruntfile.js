@@ -1,11 +1,9 @@
 /* global module:false, require:true, __dirname:true */
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
 
 module.exports = function (grunt) {
-  var fs = require('fs');
-  var path = require('path');
-  var util = require('util');
   require('load-grunt-tasks')(grunt);
 
   // Project configuration.
@@ -19,8 +17,7 @@ module.exports = function (grunt) {
     },
 
     banner: '/*! <%%= pkg.name %> - v<%%= pkg.version %> - ' +
-    // '<%%= grunt.template.today("yyyy-mm-dd HH:MM:dd") %>\n' +
-    '<%%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+      '<%%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%%= grunt.template.today("yyyy") %> <%%= pkg.author.name %>;' +
       ' Licensed <%%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
 
@@ -105,20 +102,24 @@ module.exports = function (grunt) {
         livereload: '<%%= config.livereload%>'
       },
       sync: {
-        files: ['src/**/*.{html,css,js,ico,png,txt,gif,jpg,jpeg,svg,eot,ttf,woff,json}'],
+        files: ['src/**/*'],
         tasks: ['sync']
       },
       css: {
-        files: ['src/css/**/*.css'],
+        files: ['src/css/**/*.css', '!src/css/icons.css'],
         tasks: ['px2rem']
-      },
-      combine: {
-        files: ['vendor/swiper/swiper.css', 'src/css/base.css', 'src/css/icons.css'],
-        tasks: ['concat:css', 'px2rem']
       },
       icons: {
         files: ['src/images/icons/*.png'],
-        tasks: ['autoicons', 'sync', 'concat:css', 'px2rem']
+        tasks: ['autoicons']
+      },
+      combineCss: {
+        files: '<%%= concat.css.src%>',
+        tasks: ['concat:css', 'px2rem']
+      },
+      combineJs: {
+        files: '<%%= concat.js.src%>',
+        tasks: ['concat:js']
       }
     },
 
@@ -141,7 +142,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: 'src',
-          src: ['**/*.{html,css,js,ico,png,txt,gif,jpg,jpeg,svg,eot,ttf,woff,json}'],
+          src: ['**'],
           dest: '<%%= config.folder %>'
         }]
       }
@@ -174,10 +175,10 @@ module.exports = function (grunt) {
       'autoicons',
       'clean:dev',
       'sync',
-      'concat',
-      'px2rem',
-      'connect',
-      'watch'
+      // 'concat',
+      // 'px2rem',
+      // 'connect',
+      // 'watch'
     ]);
   });
 
